@@ -29,6 +29,8 @@ export default function SignUp(props) {
       
       
       method: "POST",
+      mode: 'no-cors', // no-cors, *cors, same-origin
+
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         firstName,
