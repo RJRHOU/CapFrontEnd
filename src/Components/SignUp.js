@@ -25,7 +25,7 @@ export default function SignUp(props) {
     console.log("hi")
     
     e.preventDefault()
-     fetch(`https://capsback.herokuapp.com/user/register`, {
+     fetch(`https://newback1.herokuapp.com/register`, {
       
       
       method: "POST",
@@ -50,7 +50,7 @@ export default function SignUp(props) {
   const loginUser = async (e) => {
 
     e.preventDefault()
-     fetch(`https://capsback.herokuapp.com/login`, {
+     fetch(`https://newback1.herokuapp.com/login`, {
       
       
       method: "POST",
