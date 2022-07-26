@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -15,17 +14,16 @@ import Form from "react-bootstrap/Form";
 import Container from "react-bootstrap/esm/Container";
 import myLogo from "../Images/RADish.png";
 
-export default function Recall(props){
+export default function Recall(props) {
+  const [allreviews, setAllreviews] = useState([]);
+  const [productreview, setProductReview] = useState("");
 
-  // const [isLoading, setIsLoading] = useState(true);
+  const [displaycomments, setDisplaycomments] = useState(true);
 
-  const [reviewtitle, setreviewTitle] = useState("")
-  const [userID, setuserID] = useState("")
-  const [productID, setproductID] = useState("")
-  const [productreview, setPoster] = useState("")
-
-
-  
+  const [reviewtitle, setreviewTitle] = useState("");
+  const [userID, setuserID] = useState("");
+  const [productID, setproductID] = useState("");
+  //const [productreview, setPoster] = useState("")
 
   const dispatch = useDispatch();
 
@@ -43,134 +41,136 @@ export default function Recall(props){
     console.log(jsonData);
   };
 
-const createPost = (e) => {
-
-  e.preventDefault()
-     fetch(`http://localhost:6700/reviewpost/comment`, {
-
-
+  const createPost = (e) => {
+    e.preventDefault();
+    fetch(`https://capsback.herokuapp.com/reviewpost/comment`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-
-    productID,
-    userID,
-    reviewtitle, 
-    productreview,
-    
+        productID,
+        userID,
+        reviewtitle,
+        productreview,
       }),
-})
-}
+    });
+    getreviews();
+    setDisplaycomments(false);
+  };
 
+  const getreviews = () => {
+    fetch(`http://localhost:6700/reviewpost/allreviews`, {
+      method: "GET",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setAllreviews(data);
 
-function handlereviewTitle(e) {
-  setreviewTitle(e.target.value)
-}
-function handleproductID(e) {
-  setproductID(e.target.value)
-}
-function handleuserID(e) {
-  setuserID(e.target.value)
-}
-function handlereviewComment(e) {
-  setPoster(e.target.value)
-}
+        console.log("data", data);
+      });
+  };
 
+  function handlereviewTitle(e) {
+    setreviewTitle(e.target.value);
+  }
+  function handleproductID(e) {
+    setproductID(e.target.value);
+  }
+  function handleuserID(e) {
+    setuserID(e.target.value);
+  }
+  function handlereviewComment(e) {
+    setPoster(e.target.value);
+  }
 
+  useEffect(() => {
+    getreviews();
+  }, [displaycomments]);
 
-
-
-
-
-
+  useEffect(() => {
+    getreviews();
+  }, []);
 
   useEffect(() => {
     loadItems();
   }, [props.searchValue]);
 
   return (
-    
-    <div  >
-      <div  className="image">
-      <></>
+    <div>
+      <div className="image">
+        <></>
 
+        <div className="links" class={style.textHeight}>
+          <Row lg={6}>
+            {!!items.length &&
+              items.map((product) => (
+                <Col className="d-flex">
+                  <Card
+                    className="flex-fill"
+                    key={product.RecallID}
+                    style={{ width: "18rem" }}
+                    class="card h-800"
+                  >
+                    <Card.Img
+                      style={{ height: "20rem" }}
+                      className=""
+                      variant="top"
+                      src={product.Images[0]?.URL}
+                    />
 
+                    <Card.Body>
+                      <Card.Title>{<h4>{product.Title}</h4>}</Card.Title>
 
-    <div className="links" class={style.textHeight}>
-      <Row lg={6}>
-        {!!items.length &&
-          items.map((product) => (
-            <Col className="d-flex">
-              <Card
-                className="flex-fill"
-                key={product.RecallID}
-                style={{ width: "18rem" }}
-                class="card h-800"
-                
-              >
-                <Card.Img
-                  style={{ height: "20rem" }}
-                  className=""
-                  variant="top"
-                  src={product.Images[0]?.URL}
-                />
+                      <Card.Text style={{ height: "10rem" }}>
+                        {product.Description}
+                      </Card.Text>
+                    </Card.Body>
 
-                <Card.Body>
-                  <Card.Title>{<h4>{product.Title}</h4>}</Card.Title>
+                    <ListGroup className="list-group-flush">
+                      <ListGroupItem>
+                        Recall ID : {product.RecallID}
+                      </ListGroupItem>
+                      <ListGroupItem>
+                        {product.Retailers[0]?.Name}
+                      </ListGroupItem>
+                      <ListGroupItem>
+                        Recall Date: {product.RecallDate}
+                      </ListGroupItem>
+                    </ListGroup>
+                    <div className="text-center">
+                      <Card.Body className="links">
+                        <Card.Link class={style.links} href={product.URL}>
+                          Click For More Information
+                        </Card.Link>
+                      </Card.Body>
+                    </div>
 
-                  
-                  <Card.Text style={{ height: "10rem" }}>
-                    {product.Description}
-                  </Card.Text>
-                  
-                </Card.Body>
+                    <div className="d-flex align-items-end">
+                      <Card.Body className="links">
+                        <div className="d-flex align-items-end">
+                          <Container>
+                            <Form.Control as="textarea" rows={3} />
+                            <div className="text-center ">
+                              <Button
+                                onSubmit={(e) => createPost(e)}
+                                variant="primary"
+                                size="sm"
+                              >
+                                Submit
+                              </Button>
+                            </div>
+                          </Container>
+                        </div>
 
-                <ListGroup className="list-group-flush">
-                  <ListGroupItem>Recall ID : {product.RecallID}</ListGroupItem>
-                  <ListGroupItem>{product.Retailers[0]?.Name}</ListGroupItem>
-                  <ListGroupItem>
-                    Recall Date: {product.RecallDate}
-                  </ListGroupItem>
-                </ListGroup>
-                <div className="text-center">
-                <Card.Body className="links">
-                  <Card.Link class={style.links} href={product.URL}>
-                    Click For More Information
-                  </Card.Link>
-                </Card.Body>
-                </div>
-                
-
-                
-
-              
-
-                <div className="d-flex align-items-end">
-                <Card.Body className="links">
-                  <div className="d-flex align-items-end">
-                  <Container>
-                  
-
-                  <Form.Control as="textarea" rows={3} />
-                  <div className="text-center ">
-                  <Button onSubmit={ (e) => createPost(e)} variant="primary" size="sm">
-          Submit
-        </Button>
+                        {/* <Card.Link href="#">Another Link</Card.Link> */}
+                      </Card.Body>
+                    </div>
+                  </Card>
+                </Col>
+              ))}
+          </Row>
         </div>
-                  </Container>
-                  </div>
-                  
-                  {/* <Card.Link href="#">Another Link</Card.Link> */}
-                </Card.Body>
-                </div>
-              </Card>
-            </Col>
-          ))}
-      </Row>
-    </div>
-    </div>
+      </div>
     </div>
     // </>
   );
-};
-
+}
